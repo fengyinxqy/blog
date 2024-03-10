@@ -89,7 +89,3 @@ const userInfo = {
 
 const hasUserInfo = Object.keys(userInfo).length > 0
 </script>
-
-<style lang="scss">
-
-</style>

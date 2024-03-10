@@ -21,10 +21,10 @@ export default defineConfig({
       google: {
         families: [{
           name: 'Roboto',
-          styles: 'wght@100;300;400;500;700;900',
-        }],
-      },
-    }),
+          styles: 'wght@100;300;400;500;700;900'
+        }]
+      }
+    })
   ],
   define: { 'process.env': {} },
   resolve: {
@@ -38,10 +38,10 @@ export default defineConfig({
       '.mjs',
       '.ts',
       '.tsx',
-      '.vue',
-    ],
+      '.vue'
+    ]
   },
   server: {
-    port: 3000,
-  },
+    port: 3000
+  }
 })

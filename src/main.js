@@ -12,16 +12,18 @@ import App from './App.vue'
 
 import { createPinia } from 'pinia'
 
-// Composables
 import { createApp } from 'vue'
 
 import router from './router/index'
+
+import axiosPlugin from '@/lib/axios'
 
 const app = createApp(App)
 
 // 注册 Pinia 插件
 const pinia = createPinia()
 app.use(pinia)
+app.use(axiosPlugin)
 
 registerPlugins(app)
 

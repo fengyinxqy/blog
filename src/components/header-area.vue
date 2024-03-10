@@ -56,7 +56,7 @@ const setNavColor = (link) => {
 
 <style lang="scss" scoped>
 .primary{
-  background-color: #eeeeee;
   font-weight: 700;
+  background-color: #eee;
 }
 </style>
