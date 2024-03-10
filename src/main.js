@@ -16,14 +16,14 @@ import { createApp } from 'vue'
 
 import router from './router/index'
 
-import axiosPlugin from '@/lib/axios'
+import service from '@/lib/axios'
 
 const app = createApp(App)
 
 // 注册 Pinia 插件
 const pinia = createPinia()
 app.use(pinia)
-app.use(axiosPlugin)
+app.provide('$axios', service)
 
 registerPlugins(app)
 

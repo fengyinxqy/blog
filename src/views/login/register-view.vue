@@ -17,7 +17,10 @@
       </div>
 
       <v-text-field
+        v-model="username"
+        :rules="[requiredRule]"
         density="compact"
+        required
         placeholder="请输入您的用户名"
         prepend-inner-icon="mdi-account"
         variant="outlined"
@@ -37,12 +40,15 @@
       </div>
 
       <v-text-field
+        v-model="password"
+        :rules="[requiredRule]"
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="visible ? 'text' : 'password'"
         density="compact"
         placeholder="请输入密码"
         prepend-inner-icon="mdi-lock-outline"
         variant="outlined"
+        required
         @click:append-inner="visible = !visible"
       />
 
@@ -52,6 +58,7 @@
         color="blue"
         size="large"
         variant="tonal"
+        @click="register"
       >
         注册
       </v-btn>
@@ -65,12 +72,47 @@
         </span>
       </v-card-text>
     </v-card>
+    <v-snackbar
+      v-model="showSnackbar"
+      :timeout="3000"
+      :color="color"
+      location="top"
+    >
+      {{ message }}
+    </v-snackbar>
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
+import { useRouter } from 'vue-router'
+const $axios = inject('$axios')
+const router = useRouter()
 
 const visible = ref(false)
+const showSnackbar = ref(false)
+const username = ref('')
+const password = ref('')
+const message = ref('')
+const color = ref('success')
+const requiredRule = v => !!v || '此项为必填项'
+const register = () => {
+  const params = {
+    username: username.value,
+    password: password.value
+  }
+  $axios.post('/api/v1/user/register', params).then(res => {
+    message.value = res.message
+    showSnackbar.value = true
+    setTimeout(() => {
+      showSnackbar.value = false
+      router.push('/login')
+    }, 2000)
+  }).catch((err) => {
+    message.value = err.message
+    color.value = 'error'
+    console.log(err)
+  })
+}
 </script>
 
 <style lang="scss" scoped>

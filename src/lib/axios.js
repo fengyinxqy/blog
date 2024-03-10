@@ -38,11 +38,4 @@ service.interceptors.response.use(
     return Promise.reject(error.response.data)
   }
 )
-
-const axiosPlugin = {
-  install: (app) => {
-    app.config.globalProperties.$axios = service
-  }
-}
-
-export default axiosPlugin
+export default service

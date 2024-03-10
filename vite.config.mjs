@@ -42,6 +42,14 @@ export default defineConfig({
     ]
   },
   server: {
-    port: 3000
+    open: true, // 自动打开浏览器
+    port: 8080, // 端口号
+    host: '0.0.0.0',
+    proxy: {
+      '/api': {
+        target: 'http://localhost:7001',
+        changeOrigin: true
+      }
+    }
   }
 })

@@ -17,10 +17,12 @@
       </div>
 
       <v-text-field
+        v-model="username"
         density="compact"
         placeholder="请输入您的用户名"
         prepend-inner-icon="mdi-account"
         variant="outlined"
+        :rules="[requiredRule]"
       />
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
@@ -37,10 +39,12 @@
       </div>
 
       <v-text-field
+        v-model="password"
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="visible ? 'text' : 'password'"
         density="compact"
         placeholder="请输入密码"
+        :rules="[requiredRule]"
         prepend-inner-icon="mdi-lock-outline"
         variant="outlined"
         @click:append-inner="visible = !visible"
@@ -52,6 +56,7 @@
         color="blue"
         size="large"
         variant="tonal"
+        @click="login"
       >
         登陆
       </v-btn>
@@ -68,9 +73,36 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
+import { useRouter } from 'vue-router'
+const $axios = inject('$axios')
+const router = useRouter()
 
 const visible = ref(false)
+const showSnackbar = ref(false)
+const username = ref('')
+const password = ref('')
+const message = ref('')
+const color = ref('success')
+const requiredRule = v => !!v || '此项为必填项'
+const login = () => {
+  const params = {
+    username: username.value,
+    password: password.value
+  }
+  $axios.post('/api/v1/user/login', params).then(res => {
+    message.value = res.message
+    showSnackbar.value = true
+    setTimeout(() => {
+      showSnackbar.value = false
+      router.push('/')
+    }, 2000)
+  }).catch((err) => {
+    message.value = err.message
+    color.value = 'error'
+    console.log(err)
+  })
+}
 </script>
 
 <style lang="scss" scoped>
