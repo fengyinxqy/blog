@@ -4,14 +4,14 @@
       <AvatarLogo />
       <div class="ml-5">
         <v-btn
-          v-for="link in links"
-          :key="link.link"
-          :text="link.title"
+          v-for="item in links"
+          :key="item.link"
+          :text="item.title"
           variant="text"
           class="text-body-1"
-          :color="setNavColor(link.link)"
-          :class="setNavColor(link.link)"
-          @click="handleRouter(link.link)"
+          :color="setNavColor(item.link)"
+          :class="setNavColor(item.link)"
+          @click="handleRouter(item.link)"
         />
       </div>
 
