@@ -105,8 +105,6 @@ const login = () => {
     message.value = res.message
     const { userInfo } = res.data
     userStore.setUserInfo(userInfo)
-    userStore.setLoginStatus(true)
-    localStorage.setItem('userInfo', JSON.stringify(userInfo))
     showSnackbar.value = true
     setTimeout(() => {
       showSnackbar.value = false

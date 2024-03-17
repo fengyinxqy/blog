@@ -55,14 +55,19 @@
                 </v-btn>
               </template>
 
-              <template #default="{ isActive }">
-                <v-card title="编辑账户">
+              <template #default>
+                <v-card
+                  title="编辑账户"
+                  @click="isActive = true"
+                >
                   <v-card-text>
                     <div class="text-subtitle-1 text-medium-emphasis">
                       用户名
                     </div>
 
                     <v-text-field
+                      :value="user.username"
+                      disabled
                       density="compact"
                       placeholder="Email address"
                       prepend-inner-icon="mdi-email-outline"
@@ -73,8 +78,9 @@
                     </div>
 
                     <v-text-field
+                      v-model="form.oldPassword"
                       density="compact"
-                      placeholder="Email address"
+                      placeholder="请输入旧的密码"
                       prepend-inner-icon="mdi-email-outline"
                       variant="outlined"
                     />
@@ -83,8 +89,9 @@
                     </div>
 
                     <v-text-field
+                      v-model="form.newPassword"
                       density="compact"
-                      placeholder="Email address"
+                      placeholder="请输入新的密码"
                       prepend-inner-icon="mdi-email-outline"
                       variant="outlined"
                     />
@@ -92,11 +99,13 @@
                       头像
                     </div>
 
-                    <v-text-field
-                      density="compact"
-                      placeholder="Email address"
-                      prepend-inner-icon="mdi-email-outline"
-                      variant="outlined"
+                    <v-file-input
+                      v-model="form.avatar"
+                      :rules="rules"
+                      accept="image/png, image/jpeg, image/bmp"
+                      label="Avatar"
+                      placeholder="Pick an avatar"
+                      prepend-icon="mdi-camera"
                     />
                   </v-card-text>
 
@@ -105,7 +114,7 @@
 
                     <v-btn
                       text="确认修改"
-                      @click="isActive.value = false"
+                      @click="confirmChange"
                     />
                   </v-card-actions>
                 </v-card>
@@ -132,14 +141,68 @@
         </div>
       </v-card-text>
     </v-card>
+    <v-snackbar
+      v-model="showSnackbar"
+      :timeout="3000"
+      :color="color"
+      location="top"
+    >
+      {{ message }}
+    </v-snackbar>
   </v-menu>
 </template>
 
 <script setup>
-import avatar from '@/assets/img/avatar.jpg'
+import defaultAvatar from '@/assets/img/avatar.jpg'
 import { useUserStore } from '@/store'
+import { inject, ref } from 'vue'
 
+const $axios = inject('$axios')
 const userStore = useUserStore()
 const user = userStore.userInfo
 const isLogin = userStore.isLogin
+const isActive = ref(false)
+const showSnackbar = ref(false)
+const color = ref('success')
+const avatar = user.avatar || defaultAvatar
+const message = ref('')
+
+const form = ref({
+  username: user.username,
+  oldPassword: '',
+  newPassword: '',
+  avatar: null
+})
+
+const rules = [
+  value => {
+    return !value || !value.length || value[0].size < 2000000 || '头像大小不能超过2MB'
+  }
+]
+
+const confirmChange = () => {
+  const formData = new FormData()
+  const { username, oldPassword, newPassword, avatar } = form.value
+  formData.append('username', username)
+  if (oldPassword && newPassword) {
+    formData.append('oldPassword', oldPassword)
+    formData.append('newPassword', newPassword)
+  }
+  if (avatar.length) {
+    formData.append('avatar', avatar[0])
+  }
+  $axios.post('/api/v1/user', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }).then((res) => {
+    message.value = res.message
+    showSnackbar.value = true
+    isActive.value = false
+  }).catch(err => {
+    message.value = err.message
+    showSnackbar.value = true
+    color.value = 'error'
+  })
+}
 </script>
