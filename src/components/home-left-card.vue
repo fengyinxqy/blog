@@ -6,7 +6,8 @@
           v-for="item in cardLink"
           :key="item"
           link
-          :title="`${item}`"
+          :title="`${item.title}`"
+          @click="$router.push(item.link)"
         />
 
         <v-divider class="my-2" />
@@ -23,6 +24,9 @@
 
 <script setup>
 const cardLink = [
-  '去写一篇'
+  {
+    title: '去写一篇',
+    link: '/create-article'
+  }
 ]
 </script>

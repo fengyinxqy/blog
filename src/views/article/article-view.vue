@@ -44,16 +44,26 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
+const $axios = inject('$axios')
 
 const page = ref(1)
 const rowsPerPage = ref(5)
 
-const items = ref(Array.from({ length: 10 }, (k, v) => ({
-  title: '文章 ' + (v + 1),
-  subTitle: '作者：' + '作者' + (v + 1),
-  text: '这是一篇文章'
-})))
+const items = ref([])
+
+$axios.get('/api/v1/article').then(res => {
+  const result = res.data
+  items.value = result.map((item) => {
+    const { author, title, content } = item
+    const contentHtml = document.createElement('div')
+    contentHtml.innerHTML = content
+    const contentText = contentHtml.innerText.slice(0, 100)
+    return { title, subTitle: author, text: contentText }
+  })
+}).catch(err => {
+  console.log(err)
+})
 
 const displayedItems = computed(() => {
   const startIndex = (page.value - 1) * rowsPerPage.value
@@ -61,7 +71,3 @@ const displayedItems = computed(() => {
   return items.value.slice(startIndex, endIndex)
 })
 </script>
-
-<style lang="scss" scoped>
-
-</style>

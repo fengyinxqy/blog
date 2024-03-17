@@ -5,6 +5,7 @@ const Article = () => import('@/views/article/article-view.vue')
 const Login = () => import('@/views/login/login-view.vue')
 const register = () => import('@/views/login/register-view.vue')
 const TimeLine = () => import('@/views/timeline-view.vue')
+const createArticle = () => import('@/views/article/create-article.vue')
 
 const routes = [
   {
@@ -13,7 +14,8 @@ const routes = [
     redirect: '/timeline',
     children: [
       { path: '/timeline', component: TimeLine },
-      { path: '/article', component: Article }
+      { path: '/article', component: Article },
+      { path: '/create-article', component: createArticle }
     ]
   },
   { path: '/login', component: Login },
