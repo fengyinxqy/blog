@@ -48,6 +48,7 @@
         prepend-inner-icon="mdi-lock-outline"
         variant="outlined"
         @click:append-inner="visible = !visible"
+        @keyup.enter="login"
       />
 
       <v-btn
@@ -70,13 +71,23 @@
         </span>
       </v-card-text>
     </v-card>
+    <v-snackbar
+      v-model="showSnackbar"
+      :timeout="3000"
+      :color="color"
+      location="top"
+    >
+      {{ message }}
+    </v-snackbar>
   </div>
 </template>
 <script setup>
 import { inject, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/index'
 const $axios = inject('$axios')
 const router = useRouter()
+const userStore = useUserStore()
 
 const visible = ref(false)
 const showSnackbar = ref(false)
@@ -92,11 +103,15 @@ const login = () => {
   }
   $axios.post('/api/v1/user/login', params).then(res => {
     message.value = res.message
+    const { userInfo } = res.data
+    userStore.setUserInfo(userInfo)
+    userStore.setLoginStatus(true)
+    localStorage.setItem('userInfo', JSON.stringify(userInfo))
     showSnackbar.value = true
     setTimeout(() => {
       showSnackbar.value = false
       router.push('/')
-    }, 2000)
+    }, 1000)
   }).catch((err) => {
     message.value = err.message
     color.value = 'error'

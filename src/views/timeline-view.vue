@@ -28,13 +28,19 @@ const items = [
     content: '今天是2024年2月24日，创建了第一行代码',
     color: 'red-lighten-2',
     icon: 'mdi-star'
+  },
+  {
+    title: '实现登录注册功能',
+    content: '今天是2024年3月17日，实现登录注册功能',
+    color: 'purple-lighten-2',
+    icon: 'mdi-book-variant'
   }
 ]
 </script>
 
 <style lang="scss" scoped>
 .timeline-content{
-  font-size: 14px;
   padding: 10px 0;
+  font-size: 14px;
 }
 </style>

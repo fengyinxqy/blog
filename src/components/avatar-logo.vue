@@ -33,25 +33,84 @@
               alt="avatar"
             />
           </v-avatar>
-          <h3>{{ user.fullName||'xiaoming' }}</h3>
-          <p class="text-caption mt-1">
+          <h3>{{ user.username||'xiaoming' }}</h3>
+          <!-- <p class="text-caption mt-1">
             {{ user.email||'123456789@qq.com' }}
-          </p>
+          </p> -->
           <v-divider class="my-3" />
-          <div v-if="hasUserInfo">
-            <v-btn
-              rounded
-              variant="text"
-            >
-              编辑账户
-            </v-btn>
-            <v-divider class="my-3" />
-            <v-btn
-              rounded
-              variant="text"
-            >
-              退出登录
-            </v-btn>
+          <div v-if="isLogin">
+            <v-dialog max-width="500">
+              <template #activator="{ props: activatorProps }">
+                <v-btn
+                  v-bind="activatorProps"
+                  text="编辑账户"
+                  variant="flat"
+                />
+                <v-divider class="my-3" />
+                <v-btn
+                  rounded
+                  variant="text"
+                >
+                  退出登录
+                </v-btn>
+              </template>
+
+              <template #default="{ isActive }">
+                <v-card title="编辑账户">
+                  <v-card-text>
+                    <div class="text-subtitle-1 text-medium-emphasis">
+                      用户名
+                    </div>
+
+                    <v-text-field
+                      density="compact"
+                      placeholder="Email address"
+                      prepend-inner-icon="mdi-email-outline"
+                      variant="outlined"
+                    />
+                    <div class="text-subtitle-1 text-medium-emphasis">
+                      旧密码
+                    </div>
+
+                    <v-text-field
+                      density="compact"
+                      placeholder="Email address"
+                      prepend-inner-icon="mdi-email-outline"
+                      variant="outlined"
+                    />
+                    <div class="text-subtitle-1 text-medium-emphasis">
+                      新密码
+                    </div>
+
+                    <v-text-field
+                      density="compact"
+                      placeholder="Email address"
+                      prepend-inner-icon="mdi-email-outline"
+                      variant="outlined"
+                    />
+                    <div class="text-subtitle-1 text-medium-emphasis">
+                      头像
+                    </div>
+
+                    <v-text-field
+                      density="compact"
+                      placeholder="Email address"
+                      prepend-inner-icon="mdi-email-outline"
+                      variant="outlined"
+                    />
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer />
+
+                    <v-btn
+                      text="确认修改"
+                      @click="isActive.value = false"
+                    />
+                  </v-card-actions>
+                </v-card>
+              </template>
+            </v-dialog>
           </div>
           <div v-else>
             <v-btn
@@ -78,14 +137,9 @@
 
 <script setup>
 import avatar from '@/assets/img/avatar.jpg'
-const user = {
-  fullName: '',
-  email: ''
-}
+import { useUserStore } from '@/store'
 
-const userInfo = {
-
-}
-
-const hasUserInfo = Object.keys(userInfo).length > 0
+const userStore = useUserStore()
+const user = userStore.userInfo
+const isLogin = userStore.isLogin
 </script>

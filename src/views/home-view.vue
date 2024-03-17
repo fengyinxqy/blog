@@ -19,6 +19,3 @@ import Header from '@/components/header-area.vue'
 import LeftCard from '@/components/home-left-card.vue'
 
 </script>
-
-<style lang="scss" scoped>
-</style>

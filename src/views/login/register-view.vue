@@ -50,6 +50,7 @@
         variant="outlined"
         required
         @click:append-inner="visible = !visible"
+        @keyup.enter="register"
       />
 
       <v-btn
