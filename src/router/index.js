@@ -6,6 +6,7 @@ const Login = () => import('@/views/login/login-view.vue')
 const register = () => import('@/views/login/register-view.vue')
 const TimeLine = () => import('@/views/timeline-view.vue')
 const createArticle = () => import('@/views/article/create-article.vue')
+const articleDetail = () => import('@/views/article/article-detail.vue')
 
 const routes = [
   {
@@ -15,7 +16,8 @@ const routes = [
     children: [
       { path: '/timeline', component: TimeLine },
       { path: '/article', component: Article },
-      { path: '/create-article', component: createArticle }
+      { path: '/create-article', component: createArticle },
+      { path: '/article/:id', component: articleDetail }
     ]
   },
   { path: '/login', component: Login },

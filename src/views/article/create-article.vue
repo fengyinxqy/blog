@@ -101,7 +101,8 @@ const uploadArticle = () => {
   const params = {
     title: title.value,
     content: valueHtml.value,
-    author: user.id
+    authorId: user.id,
+    authorName: user.username
   }
   $axios.post('/api/v1/article', params).then(res => {
     message.value = res.message

@@ -11,12 +11,13 @@
       <!-- eslint-disable-next-line vue/no-template-shadow -->
       <template #default="{ items }">
         <template
-          v-for="(item, i) in items"
-          :key="i"
+          v-for="item in items"
+          :key="item.raw.articleId"
         >
           <v-card
             class="mx-auto article-item"
             hover
+            @click="$router.push(`/article/${item.raw.articleId}`)"
           >
             <v-card-item>
               <v-card-title>
@@ -55,11 +56,11 @@ const items = ref([])
 $axios.get('/api/v1/article').then(res => {
   const result = res.data
   items.value = result.map((item) => {
-    const { author, title, content } = item
+    const { authorId, authorName, title, content, articleId } = item
     const contentHtml = document.createElement('div')
     contentHtml.innerHTML = content
     const contentText = contentHtml.innerText.slice(0, 100)
-    return { title, subTitle: author, text: contentText }
+    return { title, subTitle: authorName, authorId, articleId, text: contentText }
   })
 }).catch(err => {
   console.log(err)
