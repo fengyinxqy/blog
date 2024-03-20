@@ -18,7 +18,11 @@ import router from './router/index'
 
 import service from '@/lib/axios'
 
+import dayjs from 'dayjs'
+
 const app = createApp(App)
+
+app.config.globalProperties.$dayjs = dayjs
 
 // 注册 Pinia 插件
 const pinia = createPinia()

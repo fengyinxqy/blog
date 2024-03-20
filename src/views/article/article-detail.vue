@@ -2,11 +2,19 @@
   <div class="article-container">
     <div class="left-area">
       <div class="article-content">
-        <div v-html="articleInfo.content" />
+        <h1>{{ articleInfo.title }}</h1>
+        <div class="article-info">
+          <span class="author">{{ articleInfo.authorName }}</span>
+          <span class="create-time">{{ createTime }}</span>
+        </div>
+        <div
+          class="article-info-content"
+          v-html="articleInfo.content"
+        />
       </div>
       <div class="article-comment">
         <div class="comment-count">
-          评论8
+          评论{{ commentData.count }}
         </div>
         <div class="comment-commit">
           <img
@@ -15,14 +23,27 @@
             class="avatar-img"
           >
           <div class="commit-input">
-            <v-text-field :hide-details="true" />
+            <v-text-field
+              v-model="commentValue"
+              label="评论"
+              variant="solo"
+            />
             <div class="commit-input-bottom">
-              <v-btn>提交</v-btn>
+              <v-btn
+                variant="flat"
+                color="indigo-darken-3"
+                @click="commitComment"
+              >
+                提交
+              </v-btn>
             </div>
           </div>
         </div>
         <div class="comment-sort">
-          <v-btn variant="plain">
+          <v-btn
+            variant="plain"
+            @click="sortComment('new')"
+          >
             最新
           </v-btn>|
           <v-btn variant="plain">
@@ -30,7 +51,11 @@
           </v-btn>
         </div>
         <div class="comment-content">
-          <div class="comment-item flex">
+          <div
+            v-for="item in commentData.comments"
+            :key="item.commentId"
+            class="comment-item flex"
+          >
             <div class="comment-avatar">
               <img
                 :src="userInfo.avatar"
@@ -39,71 +64,13 @@
               >
             </div>
             <div class="comment-wrapper">
-              <div>future</div>
+              <div>{{ item.authorName }}</div>
               <div class="comment-desc">
-                感谢分享
+                {{ item.content }}
               </div>
               <div class="comment-time">
                 <div class="flex">
-                  <div>n天前</div>
-                  <div class="pd-20 can-click">
-                    点赞
-                  </div>
-                  <div class="can-click">
-                    评论
-                  </div>
-                </div>
-                <div class="comment-more can-click">
-                  ...
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="comment-item flex">
-            <div class="comment-avatar">
-              <img
-                :src="userInfo.avatar"
-                alt="!"
-                class="avatar-img"
-              >
-            </div>
-            <div class="comment-wrapper">
-              <div>future</div>
-              <div class="comment-desc">
-                感谢分享
-              </div>
-              <div class="comment-time">
-                <div class="flex">
-                  <div>n天前</div>
-                  <div class="pd-20 can-click">
-                    点赞
-                  </div>
-                  <div class="can-click">
-                    评论
-                  </div>
-                </div>
-                <div class="comment-more can-click">
-                  ...
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="comment-item flex">
-            <div class="comment-avatar">
-              <img
-                :src="userInfo.avatar"
-                alt="!"
-                class="avatar-img"
-              >
-            </div>
-            <div class="comment-wrapper">
-              <div>future</div>
-              <div class="comment-desc">
-                感谢分享
-              </div>
-              <div class="comment-time">
-                <div class="flex">
-                  <div>n天前</div>
+                  <div>{{ $dayjs(item.createdAt).format('YYYY-MM-DD HH:mm') }}</div>
                   <div class="pd-20 can-click">
                     点赞
                   </div>
@@ -128,28 +95,79 @@
 </template>
 
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, computed, getCurrentInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store'
 
+const { proxy } = getCurrentInstance()
 const userStore = useUserStore()
 const userInfo = userStore.userInfo
 const $axios = inject('$axios')
 const router = useRouter()
 const articleInfo = ref({})
-const id = router.currentRoute.value.params.id
+const commentValue = ref('')
+const articleId = router.currentRoute.value.params.id
 
-$axios.get(`/api/v1/article/${id}`).then(res => {
-  console.log(res.data)
+const commentData = ref([])
+
+const createTime = computed(() => {
+  return proxy.$dayjs(articleInfo.value.createdAt).format('YYYY-MM-DD')
+})
+
+$axios.get(`/api/v1/article/${articleId}`).then(res => {
   articleInfo.value = res.data
 }).catch(err => {
   console.log(err)
 })
+
+$axios.get(`/api/v1/comment/${articleId}`).then(res => {
+  commentData.value = res.data
+}).catch(err => {
+  console.log(err)
+})
+const commitComment = () => {
+  if (!commentValue.value) return
+  const { id, username } = userInfo
+  const params = {
+    authorId: id,
+    authorName: username,
+    articleId,
+    content: commentValue.value
+  }
+  $axios.post('/api/v1/comment', params).then(res => {
+    commentData.value.comments.unshift(res.data)
+    commentData.value.count = commentData.value.comments.length
+  }).catch(err => {
+    console.log(err)
+  })
+}
+
+const sortComment = () => {
+  commentData.value.comments.sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt)
+  })
+}
+
 </script>
 
 <style lang="scss" scoped>
 .article-container{
   display:flex;
+}
+
+.article-info{
+  padding:  10px 0;
+}
+
+.author{
+  color: #666;
+  font-size: 14px;
+}
+
+.create-time{
+  margin-left: 10px;
+  color: #999;
+  font-size: 14px;
 }
 
 .article-comment{
@@ -165,7 +183,7 @@ $axios.get(`/api/v1/article/${id}`).then(res => {
 
 .article-content{
   min-height: 800px;
-  padding: 20px;
+  padding: 20px 40px ;
   background-color: #fff;
 }
 
@@ -193,7 +211,6 @@ $axios.get(`/api/v1/article/${id}`).then(res => {
 .commit-input-bottom{
   display:flex;
   justify-content: flex-end;
-  background-color: rgb(245,245,245);
 }
 
 .avatar-img{
