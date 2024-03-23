@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import Cookies from 'js-cookie'
 
 const Home = () => import('@/views/home-view.vue')
 const Article = () => import('@/views/article/article-view.vue')
@@ -32,5 +33,20 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes // `routes: routes` 的缩写
 })
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = checkIfUserIsAuthenticated()
+  if (to.path === '/login' || to.path === '/register') {
+    next()
+  }
+  if (isAuthenticated) {
+    next()
+  } else {
+    next({ path: '/login' })
+  }
+})
+
+function checkIfUserIsAuthenticated () {
+  return !!Cookies.get('token')
+}
 
 export default router

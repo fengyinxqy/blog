@@ -50,6 +50,7 @@
                 <v-btn
                   rounded
                   variant="text"
+                  @click="logout"
                 >
                   退出登录
                 </v-btn>
@@ -154,6 +155,7 @@
 
 <script setup>
 import defaultAvatar from '@/assets/img/avatar.jpg'
+import router from '@/router'
 import { useUserStore } from '@/store'
 import { inject, ref } from 'vue'
 
@@ -203,6 +205,12 @@ const confirmChange = () => {
     message.value = err.message
     showSnackbar.value = true
     color.value = 'error'
+  })
+}
+
+const logout = () => {
+  $axios.post('/api/v1/user/logout', { username: user.username }).then(res => {
+    router.push('/login')
   })
 }
 </script>
