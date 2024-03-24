@@ -201,6 +201,7 @@ const confirmChange = () => {
     message.value = res.message
     showSnackbar.value = true
     isActive.value = false
+    location.reload()
   }).catch(err => {
     message.value = err.message
     showSnackbar.value = true

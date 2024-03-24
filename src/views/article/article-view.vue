@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref, computed, inject } from 'vue'
+import { onMounted, ref, computed, inject } from 'vue'
 const $axios = inject('$axios')
 
 const page = ref(1)
@@ -53,18 +53,24 @@ const rowsPerPage = ref(5)
 
 const items = ref([])
 
-$axios.get('/api/v1/article').then(res => {
-  const result = res.data
-  items.value = result.map((item) => {
-    const { authorId, authorName, title, content, articleId } = item
-    const contentHtml = document.createElement('div')
-    contentHtml.innerHTML = content
-    const contentText = contentHtml.innerText.slice(0, 100)
-    return { title, subTitle: authorName, authorId, articleId, text: contentText }
-  })
-}).catch(err => {
-  console.log(err)
+onMounted(() => {
+  getArticleList()
 })
+
+const getArticleList = () => {
+  $axios.get('/api/v1/article').then(res => {
+    const result = res.data
+    items.value = result.map((item) => {
+      const { authorId, authorName, title, content, articleId } = item
+      const contentHtml = document.createElement('div')
+      contentHtml.innerHTML = content
+      const contentText = contentHtml.innerText.slice(0, 100)
+      return { title, subTitle: authorName, authorId, articleId, text: contentText }
+    })
+  }).catch(err => {
+    console.log(err)
+  })
+}
 
 const displayedItems = computed(() => {
   const startIndex = (page.value - 1) * rowsPerPage.value

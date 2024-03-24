@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div class="article-container">
     <div class="left-area">
@@ -76,7 +77,7 @@
                   <div class="flex">
                     <div>{{ $dayjs(item.createdAt).format('YYYY-MM-DD HH:mm') }}</div>
                     <div
-                      class="can-click"
+                      class="can-click pd-20"
                       @click="openCommentInput(item.commentId)"
                     >
                       {{ item.isOpen ? '收起' : '回复' }}
@@ -169,7 +170,7 @@
 </template>
 
 <script setup>
-import { ref, inject, computed, getCurrentInstance } from 'vue'
+import { ref, inject, computed, getCurrentInstance, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store'
 
@@ -189,19 +190,27 @@ const createTime = computed(() => {
   return proxy.$dayjs(articleInfo.value.createdAt).format('YYYY-MM-DD')
 })
 
-$axios.get(`/api/v1/article/${articleId}`).then(res => {
-  articleInfo.value = res.data
-}).catch(err => {
-  console.log(err)
+onMounted(() => {
+  getArticleInfo()
+  getCommentData()
 })
 
-$axios.get(`/api/v1/comment/${articleId}`).then(res => {
-  if (res.data && res.data.comments) {
+const getArticleInfo = () => {
+  $axios.get(`/api/v1/article/${articleId}`).then(res => {
+    articleInfo.value = res.data
+  }).catch(err => {
+    console.log(err)
+  })
+}
+
+const getCommentData = () => {
+  $axios.get(`/api/v1/comment/${articleId}`).then(res => {
     commentData.value = res.data
-  }
-}).catch(err => {
-  console.log(err)
-})
+  }).catch(err => {
+    console.log(err)
+  })
+}
+
 const commitComment = (commentId, replayCommentId) => {
   if (!commentValue.value && !subCommentValue.value) return
   const { id, username } = userInfo
